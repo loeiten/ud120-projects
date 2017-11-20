@@ -9,12 +9,11 @@ from feature_format import featureFormat, targetFeatureSplit
 
 ### read in data dictionary, convert to numpy array
 data_dict = pickle.load( open("../final_project/final_project_dataset.pkl", "r") )
+# Remove the "TOTAL" outlier point
+data_dict.pop("TOTAL", 0)
 features = ["salary", "bonus"]
 data = featureFormat(data_dict, features)
 
-### your code below
-max_salary = data[:,0].max()
-max_bonus = data[:,1].max()
 import pandas as pd
 import numpy as np
 df = pd.DataFrame(data_dict).transpose()
@@ -23,9 +22,13 @@ df = df.replace("NaN", np.nan)
 # Find row which matches the criterion (see from the plot that both are
 # satisfied at once)
 # Notice the use of bitwise comparison
-hit = df[(np.isclose(df["salary"], max_salary)) & (np.isclose(df["bonus"], max_bonus))]
-print("Outliner name: {}".format(hit.index[0]))
+hits = df[(df["salary"] > 1e6) & (df["bonus"] > 5e6)]
+names = [hit for hit in hits.index]
 
+for name in names:
+    print("Outliner name: {}".format(name))
+
+### your code below
 plt.scatter( data[:,0], data[:,1] )
 
 plt.xlabel("salary")
